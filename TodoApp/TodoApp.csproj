@@ -131,8 +131,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\TodesContext.cs" />
     <Compile Include="Models\Todo.cs" />
-    <Compile Include="Models\TodoesContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -141,13 +141,13 @@
     <Content Include="Views\_LayoutPage1.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Views\Todoes\Create.cshtml" />
     <Content Include="Views\Todoes\Delete.cshtml" />
     <Content Include="Views\Todoes\Details.cshtml" />
     <Content Include="Views\Todoes\Edit.cshtml" />
     <Content Include="Views\Todoes\Index.cshtml" />
-    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
-    <Content Include="Scripts\jquery-3.4.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
