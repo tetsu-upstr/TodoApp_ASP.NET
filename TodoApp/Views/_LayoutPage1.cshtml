@@ -8,6 +8,15 @@
 </head>
 <body>
     <div class="container">
+
+        @if(Request.IsAuthenticated)
+        {
+            // IsAuthenticated が true ならログイン状態
+            @Html.ActionLink("ログアウト", "SignOut", new { Controller = "Login"})
+
+        }
+    </div>
+    <div class="container">
         @RenderBody()
     </div>
 </body>

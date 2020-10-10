@@ -6,9 +6,10 @@ using TodoApp.Models;
 
 namespace TodoApp.Controllers
 {
+    [Authorize] // 各アクションメソッドがログイン状態でのみ使用できるようになるアノテーション
     public class TodoesController : Controller
     {
-        private TodoesContext db = new TodoesContext();
+        private readonly TodoesContext db = new TodoesContext();
 
         // GET: Todoes
         public ActionResult Index()
