@@ -54,7 +54,7 @@ namespace TodoApp.Models
         // ユーザーがロールに所属しているかどうかを返す
         public override bool IsUserInRole(string username, string roleName)
         {
-            if ("administrator".Equals(username) && "Administrator".Equals(rolename))
+            if ("administrator".Equals(username) && "Administrator".Equals(roleName))
             {
                 return true;
             }
