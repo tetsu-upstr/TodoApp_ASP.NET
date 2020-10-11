@@ -7,6 +7,8 @@ namespace TodoApp.Models
 {
     public class User
     {
+        public int Id { get; set; }
+
         [Required]
         [Index(IsUnique = true)] // 重複禁止のアノテーション
         [StringLength(256)] // 文字列の長さに制限を設定しないとDB作成時にエラーになる
@@ -16,6 +18,10 @@ namespace TodoApp.Models
         [Required]
         [DisplayName("パスワード")]
         public string Password { get; set; }
+
+        [NotMapped]
+        [DisplayName("ロール")]
+        public List<int> RoleIds { get; set; }
 
         // 複数のロールに所属できるように設定する
         // ナビゲーションプロパティ(virtualの修飾子が必須）

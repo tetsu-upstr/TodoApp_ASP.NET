@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Data.Entity;
 using System.Web.Mvc;
 using System.Web.Routing;
+using TodoApp.Models;
+using Configuration = TodoApp.Migrations.Configuration;
 
 namespace TodoApp
 {
@@ -13,6 +12,9 @@ namespace TodoApp
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            // Configuration.csで設定したマイグレーションを自動的に反映させるように追記
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TodoesContext, Configuration>());
         }
     }
 }
