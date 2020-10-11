@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Web;
+using System.Linq.Expressions;
 using System.Web.Security;
 
 namespace TodoApp.Models
@@ -110,14 +108,19 @@ namespace TodoApp.Models
         // ユーザー認証のバリデーション
         public override bool ValidateUser(string username, string password)
         {
-            if("administrator".Equals(username) && "password".Equals(password))
+            // まずDBに接続する為のコンテキストクラスを生成する
+            using(var db = new TodoesContext())
             {
-                return true;
+                var user = db.Users
+                    .Where(u => u.UserName == username && u.Password == password)
+                    .FirstOrDefault();
+
+                if(user != null)
+                {
+                    return true;
+                }
             }
-            if("user".Equals(username) && "password".Equals(password))
-            {
-                return true;
-            }
+
             return false;
         }
     }

@@ -39,10 +39,20 @@ namespace TodoApp.Models
         // 指定されたユーザーが所属するロールを配列で返す
         public override string[] GetRolesForUser(string username)
         {
-            if ("administrator".Equals(username))
+            using(var db = new TodoesContext())
             {
-                return new string[] { "Administrators" };
+                var user = db.Users
+                    .Where(u => u.UserName == username)
+                    .FirstOrDefault();
+
+                if(user != null)
+                {
+                    // selectで、ユーザーのロールそれぞれについて探索する
+                    // 戻り値が配列なので、ToArray()
+                    return user.Roles.Select(role => role.RoleName).ToArray();
+                }
             }
+
             return new string[] { "Users" };
         }
 
@@ -54,15 +64,9 @@ namespace TodoApp.Models
         // ユーザーがロールに所属しているかどうかを返す
         public override bool IsUserInRole(string username, string roleName)
         {
-            if ("administrator".Equals(username) && "Administrator".Equals(roleName))
-            {
-                return true;
-            }
-            if("user".Equals(username) && "User".Equals(roleName))
-            {
-                return true;
-            }
-            return false;
+            // 上に記述したメソッドで取得したユーザーがロールに含まれるかチェックする
+            string[] roles = this.GetRolesForUser(username);
+            return roles.Contains(roleName);
         }
 
         public override void RemoveUsersFromRoles(string[] usernames, string[] roleNames)
