@@ -14,6 +14,7 @@
             // IsAuthenticated が true ならログイン状態
             @Html.ActionLink("ログアウト", "SignOut", new { Controller = "Login"})
 
+            // Administratorsに所属しているユーザは、ユーザー管理を表示する
             if (User.IsInRole("Administrators"))
             {
                 <span>|</span>

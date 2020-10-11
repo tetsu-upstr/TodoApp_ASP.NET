@@ -19,7 +19,7 @@ namespace TodoApp.Models
         [DisplayName("パスワード")]
         public string Password { get; set; }
 
-        [NotMapped]
+        [NotMapped] // マイグレーション時に作られないようにするため
         [DisplayName("ロール")]
         public List<int> RoleIds { get; set; }
 

@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -6,6 +8,7 @@ using TodoApp.Models;
 
 namespace TodoApp.Controllers
 {
+    // Administratorsのみユーザーの管理ができるようアノテーションを設定
     [Authorize(Roles = "Administrators")]
     public class UsersController : Controller
     {
@@ -35,6 +38,8 @@ namespace TodoApp.Controllers
         // GET: Users/Create
         public ActionResult Create()
         {
+            // こちらの引数のロールには空の配列を返すようにセット
+            this.SetRoles(new List<Role>());
             return View();
         }
 
@@ -67,6 +72,7 @@ namespace TodoApp.Controllers
             {
                 return HttpNotFound();
             }
+            this.SetRoles(user.Roles);
             return View(user);
         }
 
@@ -120,5 +126,26 @@ namespace TodoApp.Controllers
             }
             base.Dispose(disposing);
         }
+
+        // Create と Edit のメソッドから共通で使用するメソッドとして定義
+        // 引数に現在ユーザーが所属しているロールをセットするように修正
+        private void SetRoles(ICollection<Role> userRoles)
+        {
+
+            // 配列に変換（扱いやすくするために）
+            var roles = userRoles.Select(item => item.Id).ToArray();
+
+            var list = db.Roles.Select(item => new SelectListItem()
+            {
+                Text = item.RoleName,
+                Value = item.Id.ToString(),
+                // 選択状態にするには、Selected
+                Selected = roles.Contains(item.Id)
+            }).ToList();
+
+            // ビューで扱うために取得したlistをVieBagにセット
+            ViewBag.RoleIds = list;
+        }
+
     }
 }
