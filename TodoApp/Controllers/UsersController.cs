@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -48,15 +47,21 @@ namespace TodoApp.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 をご覧ください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,UserName,Password")] User user)
+        public ActionResult Create([Bind(Include = "Id,UserName,Password,RoleIds")] User user)
         {
+            // ビューで入力されたロールがDBのロールに含まれていれば取得して返す
+            var roles = db.Roles.Where(role => user.RoleIds.Contains(role.Id)).ToList();
+
             if (ModelState.IsValid)
             {
+                user.Roles = roles;
+
                 db.Users.Add(user);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
+            this.SetRoles(roles);
             return View(user);
         }
 
@@ -81,14 +86,32 @@ namespace TodoApp.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 をご覧ください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,UserName,Password")] User user)
+        public ActionResult Edit([Bind(Include = "Id,UserName,Password,RoleIds")] User user)
         {
+            var roles = db.Roles.Where(user => user.RoleIds.Contains(Role.Id)).toList();
+
             if (ModelState.IsValid)
             {
+                // DBからユーザー情報を取得
+                var dbUser = db.Users.Find(user.Id);
+                if(dbUser == null)
+                {
+                    return HttpNotFound();
+                }
+                dbUser.UserName = user.UserName;
+                dbUser.Password = user.Password;
+                dbUser.Roles.Clear();
+                foreach(var role in roles)
+                {
+                    dbUser.Roles.Add(role);
+                }
+                
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+
+            this.SetRoles(roles);
             return View(user);
         }
 
@@ -135,6 +158,7 @@ namespace TodoApp.Controllers
             // 配列に変換（扱いやすくするために）
             var roles = userRoles.Select(item => item.Id).ToArray();
 
+            // リストボックスからアイテムを取り出すためにSelectListItemオブジェクトをセット
             var list = db.Roles.Select(item => new SelectListItem()
             {
                 Text = item.RoleName,
