@@ -107,7 +107,8 @@ namespace TodoApp.Controllers
                     return HttpNotFound();
                 }
                 // ユーザーが入力した情報を更新
-                dbUser.UserName = user.UserName;
+                //dbUser.UserName = user.UserName;
+
                 // DBに格納されているパスワードがハッシュ化されていなければハッシュ化する
                 if (!dbUser.Password.Equals(user.Password))
                 {

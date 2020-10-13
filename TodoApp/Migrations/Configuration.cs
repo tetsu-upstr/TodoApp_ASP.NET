@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
-    using System.Linq.Expressions;
     using TodoApp.Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<TodoApp.Models.TodoesContext>

@@ -1,4 +1,5 @@
-﻿ using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -14,7 +15,16 @@ namespace TodoApp.Controllers
         // GET: Todoes
         public ActionResult Index()
         {
-            return View(db.Todoes.ToList());
+            // IdentityでIdや名前が取得できる
+            var user = db.Users.Where(item => item.UserName == User.Identity.Name).FirstOrDefault();
+
+            if(User != null)
+            {
+                // ユーザーがnullでなければユーザー自身のTodoを返す
+                return View(user.Todoes);
+            }
+
+            return View(new List<Todo>());
         }
 
         // GET: Todoes/Details/5
@@ -47,9 +57,17 @@ namespace TodoApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Todoes.Add(todo);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+
+                var user = db.Users.Where(item => item.UserName == User.Identity.Name).FirstOrDefault();
+                
+                if(user != null)
+                {
+                    todo.User = user;
+
+                    db.Todoes.Add(todo);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }   
             }
 
             return View(todo);

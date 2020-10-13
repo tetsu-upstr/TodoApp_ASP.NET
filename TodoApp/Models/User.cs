@@ -26,5 +26,9 @@ namespace TodoApp.Models
         // 複数のロールに所属できるように設定する
         // ナビゲーションプロパティ(virtualの修飾子が必須）
         public virtual ICollection<Role> Roles { get; set; }
+
+        // Todoとユーザーが紐づくように追加
+        // 一人のユーザーは複数のTodoを持つのでコレクションとして保持する(1対nの関係)
+        public virtual ICollection<Todo> Todoes { get; set; }
     }
 }

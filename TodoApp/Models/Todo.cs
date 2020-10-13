@@ -24,5 +24,8 @@ namespace TodoApp.Models
 
         [DisplayName("完了")]
         public bool Done { get; set; }
+
+        // Todoとユーザーを紐づけるプロパティを追加
+        public virtual User User { get; set; }
     }
 }
