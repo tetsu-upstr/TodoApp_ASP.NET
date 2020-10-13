@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Web.Mvc;
 using TodoApp.Models;
 
@@ -11,7 +12,10 @@ namespace TodoApp.Controllers
     [Authorize(Roles = "Administrators")]
     public class UsersController : Controller
     {
-        private TodoesContext db = new TodoesContext();
+        private readonly TodoesContext db = new TodoesContext();
+
+        // ハッシュ化メソッドを使いたいのでメンバーシッププロバイダーのインスタンスを保持するように追記
+        private readonly CustomMembershipProvider membershipProvider = new CustomMembershipProvider();
 
         // GET: Users
         public ActionResult Index()
@@ -49,19 +53,22 @@ namespace TodoApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,UserName,Password,RoleIds")] User user)
         {
-            // ビューで入力されたロールがDBのロールに含まれていれば取得して返す
+            // ビューのリストボックスで選択されたロールがDBのロールに含まれていれば取得して返す
             var roles = db.Roles.Where(role => user.RoleIds.Contains(role.Id)).ToList();
 
             if (ModelState.IsValid)
             {
+                // 取得したロールをセット
                 user.Roles = roles;
+                // Create時にパスワードをハッシュ化して登録
+                user.Password = this.membershipProvider.GeneratePasswordHash(user.UserName, user.Password);
 
                 db.Users.Add(user);
-                db.SaveChanges();
+                db.SaveChanges(); // DBに反映
                 return RedirectToAction("Index");
             }
 
-            this.SetRoles(roles);
+            this.SetRoles(roles); 
             return View(user);
         }
 
@@ -88,7 +95,8 @@ namespace TodoApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,UserName,Password,RoleIds")] User user)
         {
-            var roles = db.Roles.Where(user => user.RoleIds.Contains(Role.Id)).toList();
+            // Createと同様の処理
+            var roles = db.Roles.Where(role => user.RoleIds.Contains(role.Id)).ToList();
 
             if (ModelState.IsValid)
             {
@@ -98,8 +106,15 @@ namespace TodoApp.Controllers
                 {
                     return HttpNotFound();
                 }
+                // ユーザーが入力した情報を更新
                 dbUser.UserName = user.UserName;
-                dbUser.Password = user.Password;
+                // DBに格納されているパスワードがハッシュ化されていなければハッシュ化する
+                if (!dbUser.Password.Equals(user.Password))
+                {
+                    dbUser.Password = this.membershipProvider.GeneratePasswordHash(user.UserName, user.Password);
+                }
+
+                //dbUser.Password = user.Password;
                 dbUser.Roles.Clear();
                 foreach(var role in roles)
                 {

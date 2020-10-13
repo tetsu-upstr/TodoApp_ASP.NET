@@ -30,14 +30,6 @@
                 Roles = new List<Role>()
             };
 
-            User tetsu = new User()
-            {
-                Id = 2,
-                UserName = "tetsu",
-                Password = "password",
-                Roles = new List<Role>()
-            };
-
             Role administrators = new Role
             {
                 Id = 1,
@@ -52,13 +44,15 @@
                 Users = new List<User>()
             };
 
+            // adminのパスワードをハッシュ化
+            var membarshipProvieder = new CustomMembershipProvider();
+            admin.Password = membarshipProvieder.GeneratePasswordHash(admin.UserName, admin.Password);
+
             admin.Roles.Add(administrators);
             administrators.Users.Add(admin);
-            tetsu.Roles.Add(users);
-            users.Users.Add(tetsu);
 
             // AddOrUpdate データベースになければ登録、あれば更新するメソッド
-            context.Users.AddOrUpdate(user => user.Id, new User[] { admin, tetsu });
+            context.Users.AddOrUpdate(user => user.Id, new User[] { admin });
             context.Roles.AddOrUpdate(role => role.Id, new Role[] { administrators, users });
         }
     }

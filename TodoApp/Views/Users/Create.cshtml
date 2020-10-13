@@ -35,7 +35,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.RoleIds, htmlAttributes: new { @class = "Control-label col-md-2"})
-            <div class="col-md-10"
+            <div class="col-md-10">
                 @Html.ListBox("RoleIds", null, new { @class="form-control"})
                 @Html.ValidationMessageFor(model => model.RoleIds, "", new { @class = "text-danger" })
             </div>
